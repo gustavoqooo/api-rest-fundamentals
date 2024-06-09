@@ -2,7 +2,10 @@ package pe.edu.cibertec.api_rest_fundamentals.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pe.edu.cibertec.api_rest_fundamentals.model.GeneralResponse;
 import pe.edu.cibertec.api_rest_fundamentals.service.IOperacionesService;
 
 import java.util.List;
@@ -15,14 +18,22 @@ public class OperacionesController {
     private IOperacionesService iOperacionesService;
     //Prueba en Postman = localhost:8055/api/v1/esprimo/11
     @GetMapping("/esprimo/{numero}")
-    public boolean validarNumeroPrimo(@PathVariable int numero){
-        return iOperacionesService.validarNumeroEsPrimo(numero);
+    public ResponseEntity<GeneralResponse> validarNumeroPrimo(
+            @PathVariable int numero){
+        boolean resultado =iOperacionesService.validarNumeroEsPrimo(numero);
+        String mensaje = resultado ? numero + " es primo" : numero + " NO es primo";
+        GeneralResponse response = GeneralResponse.builder()
+                .mensaje(mensaje).build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     //Prueba en Postman = localhost:8055/api/v1/exponente/2/4
     @GetMapping("/exponente/{num}/{expo}")
-    public double elevarNumeroAExponente(@PathVariable int num,
+    @ResponseBody
+    public GeneralResponse elevarNumeroAExponente(@PathVariable int num,
                                          @PathVariable int expo){
-        return iOperacionesService.elevarNumeroAlExponente(num, expo);
+        String mensaje = "El resultado es: "
+                +iOperacionesService.elevarNumeroAlExponente(num, expo);
+        return GeneralResponse.builder().mensaje(mensaje).build();
     }
 
     //Prueba en Postman = localhost:8055/api/v1/primo?numero=11
